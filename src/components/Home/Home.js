@@ -24,12 +24,29 @@ class Home extends React.Component {
         this.fetchItems(endpoint);
     }
 
+    loadMoreItems = () => {
+        let endpoint = '';
+        this.setState({ loading:true });
+
+        if(this.state.searchTerm === '') {
+            endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-us&page=${this.state.currentPage + 1}`;
+        }
+        else {
+            endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=en-US&query${this.state.searchTerm}&page=${this.state.currentPage + 1}`;
+        }
+        this.fetchItems(endpoint);
+    }
+
     fetchItems = (endpoint) => {
         fetch(endpoint)
         .then(result => result.json())
         .then(result => {
             this.setState({
-                moives: [...this.state.movies, ...result.results]
+                moives: [...this.state.movies, ...result.results],
+                heroImage: this.state.heroImage || result.results[0],
+                loading: false,
+                currentPage: result.page,
+                totalPages: result.total_pages
             })
         })
     }
